@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — Doença Renal Crônica</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a1a1a; min-height: 100vh; }
+
+  header { background: #1e3a5f; color: white; padding: 20px 30px; text-align: center; }
+  header h1 { font-size: 22px; margin-bottom: 4px; }
+  header p { font-size: 13px; opacity: 0.8; }
+
+  .quiz-container { max-width: 800px; margin: 30px auto; padding: 0 16px 60px; }
+
+  #startScreen { background: white; border-radius: 12px; padding: 40px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  #startScreen h2 { font-size: 20px; color: #1e3a5f; margin-bottom: 12px; }
+  #startScreen p { font-size: 14px; color: #555; margin-bottom: 24px; line-height: 1.6; }
+
+  .progress-bar-bg { background: #dde3ea; border-radius: 8px; height: 8px; margin-bottom: 8px; }
+  .progress-bar-fill { background: #2563eb; height: 8px; border-radius: 8px; transition: width 0.4s ease; }
+  .progress-label { font-size: 12px; color: #666; margin-bottom: 20px; }
+
+  .question-card { background: white; border-radius: 12px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 16px; }
+  .question-number { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #2563eb; letter-spacing: 1px; margin-bottom: 10px; }
+  .question-text { font-size: 15px; line-height: 1.65; color: #1a1a1a; margin-bottom: 22px; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn { background: #f7f9fc; border: 2px solid #dde3ea; border-radius: 8px; padding: 12px 16px; text-align: left; font-size: 14px; cursor: pointer; transition: background 0.15s, border-color 0.15s; line-height: 1.5; }
+  .option-btn:hover:not(:disabled) { background: #e8f0fe; border-color: #2563eb; }
+  .option-btn.correct { background: #d1fae5; border-color: #16a34a; color: #166534; }
+  .option-btn.wrong { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
+  .option-btn:disabled { cursor: default; }
+
+  .explanation { display: none; background: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 0 8px 8px 0; padding: 14px 16px; margin-top: 14px; font-size: 13px; line-height: 1.6; color: #166534; }
+  .explanation.show { display: block; }
+
+  .btn-next { display: none; margin-top: 18px; background: #2563eb; color: white; border: none; border-radius: 8px; padding: 12px 28px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .btn-next:hover { background: #1d4ed8; }
+  .btn-next.show { display: inline-block; }
+
+  .btn-primary { background: #2563eb; color: white; border: none; border-radius: 8px; padding: 14px 36px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .btn-primary:hover { background: #1d4ed8; }
+
+  #resultScreen { display: none; background: white; border-radius: 12px; padding: 40px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .score-circle { width: 120px; height: 120px; border-radius: 50%; background: #1e3a5f; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; }
+  .score-circle .score-num { font-size: 32px; font-weight: 700; }
+  .score-circle .score-denom { font-size: 13px; opacity: 0.8; }
+  #resultScreen h2 { font-size: 20px; color: #1e3a5f; margin-bottom: 10px; }
+  #resultScreen p { font-size: 14px; color: #555; margin-bottom: 24px; }
+
+  .stats-row { display: flex; justify-content: center; gap: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+  .stat-box { background: #f7f9fc; border-radius: 8px; padding: 12px 20px; text-align: center; min-width: 90px; }
+  .stat-box .stat-val { font-size: 22px; font-weight: 700; }
+  .stat-box .stat-lbl { font-size: 11px; color: #888; margin-top: 2px; }
+  .stat-box.green .stat-val { color: #16a34a; }
+  .stat-box.red .stat-val { color: #dc2626; }
+  .stat-box.blue .stat-val { color: #2563eb; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Doença Renal Crônica</h1>
+  <p>Nefrologia — SAI (Saúde do Adulto e do Idoso)</p>
+</header>
+
+<div class="quiz-container">
+
+  <div id="startScreen">
+    <h2>Quiz de Revisão</h2>
+    <p>25 questões cobrindo definição, estadiamento, função renal, progressão, complicações, tratamento, diálise e caso clínico.<br><br>Responda cada questão e veja a explicação antes de avançar.</p>
+    <button class="btn-primary" onclick="startQuiz()">Começar Quiz</button>
+  </div>
+
+  <div id="quizArea" style="display:none;">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">Questão 0 de 25</div>
+    <div class="question-card" id="questionCard">
+      <div class="question-number" id="questionNumber"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="explanation" id="explanation"></div>
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">Próxima questão →</button>
+    </div>
+  </div>
+
+  <div id="resultScreen">
+    <div class="score-circle">
+      <span class="score-num" id="scoreFinal">0</span>
+      <span class="score-denom" id="scoreDenom">de 25</span>
+    </div>
+    <h2 id="resultTitle"></h2>
+    <p id="resultMsg"></p>
+    <div class="stats-row">
+      <div class="stat-box green"><div class="stat-val" id="statCorrect">0</div><div class="stat-lbl">Acertos</div></div>
+      <div class="stat-box red"><div class="stat-val" id="statWrong">0</div><div class="stat-lbl">Erros</div></div>
+      <div class="stat-box blue"><div class="stat-val" id="statPct">0%</div><div class="stat-lbl">Aproveitamento</div></div>
+    </div>
+    <button class="btn-primary" onclick="restartQuiz()">Refazer Quiz</button>
+  </div>
+
+</div>
+
+<script>
+const rawQuestions = [
+  {
+    question: "Qual é a definição correta de Doença Renal Crônica (DRC) segundo o KDIGO?",
+    options: [
+      "Anormalidade estrutural ou funcional dos rins por ≥ 3 meses, manifestada por lesão renal ou TFG ≤ 60 mL/min/1,73m²",
+      "Redução da TFG abaixo de 60 mL/min por qualquer período, independentemente de outros achados",
+      "Proteinúria persistente por mais de 6 meses associada à HAS ou DM",
+      "TFG inferior a 30 mL/min com necessidade de preparo para terapia renal substitutiva",
+      "Elevação da creatinina sérica por ≥ 1 mês com ou sem proteinúria associada"
+    ],
+    correctIndex: 0,
+    explanation: "DRC é definida pelo KDIGO como anormalidade estrutural ou funcional dos rins com duração ≥ 3 meses, manifestada por lesão renal (proteinúria, hematúria, alteração em imagem ou biópsia) OU TFG ≤ 60 mL/min/1,73m². O critério temporal de 3 meses diferencia DRC de IRA."
+  },
+  {
+    question: "Qual estágio da DRC corresponde a uma TFG de 22 mL/min/1,73m²?",
+    options: [
+      "G4 — gravemente reduzida, com necessidade de preparo para TRS",
+      "G3b — moderada a gravemente reduzida",
+      "G5 — insuficiência renal estabelecida",
+      "G3a — leve a moderadamente reduzida",
+      "G2 — levemente reduzida com lesão renal"
+    ],
+    correctIndex: 0,
+    explanation: "TFG entre 15–29 mL/min/1,73m² corresponde ao estágio G4 (gravemente reduzida). Nesse estágio o paciente deve ser preparado para TRS. G3b = 30–44; G5 = <15; G3a = 45–59; G2 = 60–89."
+  },
+  {
+    question: "Sobre os marcadores de função renal, qual afirmação está CORRETA?",
+    options: [
+      "A creatinina sofre secreção tubular proximal, fazendo o clearance de creatinina superestimar a TFG real",
+      "A ureia não é reabsorvida no túbulo e por isso reflete com precisão a TFG",
+      "A cistatina C varia significativamente com a massa muscular do paciente",
+      "O clearance de creatinina subestima a TFG em pacientes com massa muscular aumentada",
+      "A cistatina C é secretada ativamente pelos túbulos, o que limita sua utilidade clínica"
+    ],
+    correctIndex: 0,
+    explanation: "A creatinina é filtrada e também secretada pelo túbulo proximal, fazendo o clearance de creatinina superestimar a TFG real. A ureia é reabsorvida no túbulo (subestima TFG). A cistatina C NÃO varia com massa muscular, dieta, gênero ou etnia — essa é sua principal vantagem."
+  },
+  {
+    question: "Em quais situações a cistatina C é preferível à creatinina para estimar a TFG?",
+    options: [
+      "Pacientes com massa muscular muito baixa (caquexia) ou muito elevada (fisiculturistas) e obesos",
+      "Pacientes com hipertireoidismo ou em uso de corticoides, pois a cistatina não sofre variação nesses casos",
+      "Em todos os pacientes com DRC a partir do estágio G3, independentemente de outras características",
+      "Exclusivamente em gestantes, pois a creatinina é metabolizada de forma diferente na gravidez",
+      "Apenas em pacientes em hemodiálise, para monitorar adequação da diálise"
+    ],
+    correctIndex: 0,
+    explanation: "A cistatina C é preferida em pacientes com massa muscular muito baixa (desnutrição, amputação, caquexia) ou muito alta (fisiculturistas, atletas) e em obesos — situações em que a creatinina é particularmente imprecisa. Atenção: a cistatina C sofre variação no hiper/hipotireoidismo, gestação e uso de corticoides."
+  },
+  {
+    question: "Qual dos seguintes fatores NÃO está associado à progressão da DRC?",
+    options: [
+      "Hipotensão arterial crônica tratada com expansão volêmica",
+      "Proteinúria persistente",
+      "Hiperglicemia não controlada",
+      "Tabagismo ativo",
+      "Infecções do trato urinário de repetição"
+    ],
+    correctIndex: 0,
+    explanation: "Os fatores associados à progressão da DRC incluem: proteinúria, HAS, hiperglicemia, dislipidemia, obesidade, tabagismo, DCV, ITU e IRA. Hipotensão crônica tratada com expansão volêmica não é fator de progressão descrito — embora hipoperfusão renal grave possa causar IRA e agravar a DRC."
+  },
+  {
+    question: "Qual é a meta pressórica recomendada para pacientes com DRC?",
+    options: [
+      "PA < 130 x 80 mmHg, com iECA ou BRA como droga de escolha",
+      "PA < 140 x 90 mmHg, com bloqueador de canal de cálcio como primeira linha",
+      "PA < 120 x 80 mmHg independentemente da presença de proteinúria",
+      "PA < 130 x 80 mmHg apenas em pacientes com DM; 140 x 90 para os demais",
+      "PA < 150 x 90 mmHg nos estágios G1–G2 e < 130 x 80 nos estágios G3–G5"
+    ],
+    correctIndex: 0,
+    explanation: "A meta de PA na DRC é < 130 x 80 mmHg para todos os pacientes. Os iECA ou BRA são as drogas de primeira escolha, especialmente na presença de proteinúria, pois além de controlar a PA reduzem a pressão intraglomerular e a proteinúria."
+  },
+  {
+    question: "Qual é a meta de hemoglobina recomendada no tratamento da anemia da DRC?",
+    options: [
+      "Hb entre 10 e 11,5 g/dL — metas mais altas aumentam risco cardiovascular e tromboembólico",
+      "Hb entre 12 e 13 g/dL — próximo ao valor normal para reduzir sintomas de anemia",
+      "Hb acima de 11 g/dL em qualquer paciente, independentemente de comorbidades",
+      "Hb entre 9 e 10 g/dL para evitar sobrecarga de volume com o uso de EPO",
+      "Hb acima de 13 g/dL apenas em pacientes com doença cardiovascular estabelecida"
+    ],
+    correctIndex: 0,
+    explanation: "A meta de Hb na DRC é 10–11,5 g/dL. Metas acima de 13 g/dL foram associadas a maior risco de eventos tromboembólicos e cardiovasculares nos estudos CHOIR e TREAT (NEJM). O tratamento inclui reposição de ferro (Tsat >20% ou ferritina >100 ng/dL) e, se necessário, agentes estimuladores da eritropoiese (EPO)."
+  },
+  {
+    question: "Sobre a fisiopatologia da anemia na DRC, qual opção está CORRETA?",
+    options: [
+      "É multifatorial: redução de EPO, deficiência de ferro, inflamação, sangramento e hiperparatireoidismo secundário",
+      "É causada exclusivamente pela redução da produção de eritropoietina pelos rins doentes",
+      "Resulta principalmente da hemólise mecânica causada pelo acúmulo de toxinas urêmicas",
+      "Ocorre apenas nos estágios G4 e G5, sendo incomum nos estágios iniciais da DRC",
+      "É normocítica normocrômica exclusivamente, nunca apresentando padrão microcítico hipocrômico"
+    ],
+    correctIndex: 0,
+    explanation: "A anemia da DRC é multifatorial: ↓ EPO (principal), deficiência de ferro (má absorção, perdas na diálise, inflamação), inflamação crônica (inibe eritropoiese, sequestra ferro), hiperparatireoidismo secundário (PTH alto inibe eritropoiese na medula), sangramento (disfunção plaquetária urêmica). A deficiência de ferro pode gerar padrão microcítico hipocrômico."
+  },
+  {
+    question: "Qual dos seguintes iSGLT-2 está INCORRETAMENTE associado ao seu nome comercial?",
+    options: [
+      "Dapagliflozina — Jardiance®",
+      "Dapagliflozina — Forxiga®",
+      "Empagliflozina — Jardiance®",
+      "Canagliflozina — Invokana®",
+      "Empagliflozina — disponível em doses de 10 mg e 25 mg"
+    ],
+    correctIndex: 0,
+    explanation: "Dapagliflozina = Forxiga® (10 mg). Empagliflozina = Jardiance® (10 mg e 25 mg). Canagliflozina = Invokana® (100 mg e 300 mg). A afirmação incorreta é associar dapagliflozina ao Jardiance® — este é o nome comercial da empagliflozina."
+  },
+  {
+    question: "Qual o mecanismo de ação da Fineranona (Firialta®) no tratamento da DRC?",
+    options: [
+      "Antagonismo dos receptores mineralocorticoides com ação anti-inflamatória e antifibrótica",
+      "Inibição do cotransportador sódio-glicose tipo 2 no túbulo proximal renal",
+      "Bloqueio do receptor AT1 da angiotensina II, reduzindo a pressão intraglomerular",
+      "Estimulação da produção de eritropoietina endógena pelos rins remanescentes",
+      "Inibição da enzima conversora de angiotensina, reduzindo a formação de angiotensina II"
+    ],
+    correctIndex: 0,
+    explanation: "A Fineranona é um inibidor seletivo não esteroidal dos receptores mineralocorticoides (MR). Sua ação é anti-inflamatória e antifibrótica, distinta dos MRAs esteroidal (espironolactona, eplerenona). Está aprovada para DRC com proteinúria em pacientes com DM2 e pode ser combinada com iECA/BRA e iSGLT-2 (triple therapy)."
+  },
+  {
+    question: "Sobre o distúrbio do metabolismo mineral e ósseo (DMO-DRC), qual é a sequência fisiopatológica CORRETA?",
+    options: [
+      "Retenção de fósforo → ↓ vitamina D ativa → hipocalcemia → ↑ PTH → hiperparatireoidismo secundário",
+      "Hipocalcemia primária → ↑ PTH → retenção de fósforo → ↓ vitamina D → calcifilaxia",
+      "↓ PTH → ↓ ativação de vitamina D → hiperfosfatemia → hipercalcemia → calcificações",
+      "↑ vitamina D ativa → hiperfosfatemia → hipercalcemia → ↓ PTH → osteíte fibrosa",
+      "Retenção de fósforo → ↑ vitamina D ativa → hipercalcemia → ↓ PTH → osteodistrofia renal"
+    ],
+    correctIndex: 0,
+    explanation: "Com a queda da TFG há retenção de fósforo → hiperfosfatemia inibe a produção de 1,25-OH vitamina D (calcitriol) pelos rins → hipovitaminose D reduz absorção intestinal de Ca → hipocalcemia + hiperfosfatemia estimulam as paratireoides → ↑ PTH (hiperparatireoidismo secundário) → mobilização óssea de cálcio → osteíte fibrosa, calcificações vasculares e, nos casos graves, calcifilaxia."
+  },
+  {
+    question: "Quais são as indicações para início da diálise na DRC?",
+    options: [
+      "TFG < 10–12 mL/min, síndrome urêmica, hipervolemia refratária, hipercalemia refratária com alteração no ECG e acidose metabólica refratária",
+      "TFG < 20 mL/min isoladamente, independentemente da presença de sintomas ou complicações",
+      "Apenas sintomas de síndrome urêmica clássica (encefalopatia, pericardite, asterixis)",
+      "TFG < 15 mL/min associada obrigatoriamente a proteinúria acima de 3 g/dia",
+      "Qualquer hipercalemia acima de 5,5 mEq/L detectada em paciente com DRC estágio G4"
+    ],
+    correctIndex: 0,
+    explanation: "As indicações clássicas para início de diálise são: TFG < 10 mL/min (ou < 12 com sintomas), síndrome urêmica (encefalopatia, pericardite, sangramento), hipervolemia refratária ao tratamento clínico, hiperpotassemia refratária OU com alteração no ECG, e acidose metabólica refratária. A TFG isolada sem sintomas raramente é indicação absoluta."
+  },
+  {
+    question: "Qual é o princípio físico-químico predominante na hemodiálise convencional?",
+    options: [
+      "Difusão — movimento de solutos pela diferença de concentração entre o sangue e o dialisato",
+      "Convecção — movimento do solvente que arrasta solutos por ultrafiltração",
+      "Adsorção — aderência de toxinas urêmicas na membrana do dialisador",
+      "Osmose — movimento de água do compartimento de menor para maior concentração",
+      "Filtração por pressão hidrostática sem diferença de concentração de solutos"
+    ],
+    correctIndex: 0,
+    explanation: "O principal princípio da hemodiálise convencional é a difusão: solutos se movem do compartimento de maior concentração (sangue) para o de menor (dialisato) através da membrana semipermeável. A convecção (ultrafiltração) também ocorre para remoção de água e médias moléculas, sendo o princípio predominante na hemodiafiltração (HDF)."
+  },
+  {
+    question: "Qual é o acesso vascular definitivo de PRIMEIRA escolha para hemodiálise?",
+    options: [
+      "Fístula artério-venosa entre artéria radial e veia cefálica distal (FAV radiocefálica)",
+      "Cateter tunelizado na veia jugular interna direita",
+      "Prótese vascular (PTFE) em alça no antebraço",
+      "Fístula entre artéria braquial e veia cefálica (FAV braquiocefálica)",
+      "Cateter não tunelizado na veia subclávia por ser de fácil implante"
+    ],
+    correctIndex: 0,
+    explanation: "A FAV radiocefálica (artéria radial + veia cefálica distal) é o acesso vascular definitivo de primeira preferência para hemodiálise — menor risco de infecção e trombose, maior durabilidade. Segunda opção: FAV braquiocefálica (artéria braquial + veia cefálica). Cateteres (tunelizados ou não) são temporários ou de segunda linha. Prótese PTFE é usada quando FAV não é viável."
+  },
+  {
+    question: "Qual é a diferença entre DPAC e DPA na diálise peritoneal?",
+    options: [
+      "DPAC = 4 trocas manuais/dia pelo paciente; DPA = 1 sessão noturna automatizada por máquina cicladora",
+      "DPAC = realizada em ambiente hospitalar 3x/semana; DPA = realizada em casa diariamente",
+      "DPAC = diálise peritoneal aguda para IRA; DPA = diálise peritoneal crônica para DRC",
+      "DPAC = usa cicladora automática durante o dia; DPA = trocas manuais realizadas à noite",
+      "Não há diferença clínica — DPAC e DPA são nomenclaturas diferentes para o mesmo procedimento"
+    ],
+    correctIndex: 0,
+    explanation: "DPAC (Diálise Peritoneal Ambulatorial Contínua) = realizada manualmente pelo próprio paciente, com 4 trocas ao dia, todos os dias. DPA (Diálise Peritoneal Automatizada) = realizada por uma máquina cicladora automática, geralmente 1 sessão noturna, todos os dias. Ambas são realizadas em casa; a DPA oferece maior liberdade diurna."
+  },
+  {
+    question: "Qual das seguintes medicações está CONTRAINDICADA ou requer redução de dose em pacientes com TFG < 30 mL/min?",
+    options: [
+      "Metformina — risco de acidose lática por acúmulo do fármaco",
+      "Atorvastatina — hepatotoxicidade aumentada na insuficiência renal grave",
+      "Losartana — hipercalemia grave que inviabiliza seu uso em qualquer dose",
+      "Anlodipina — metabolismo renal exclusivo com acúmulo em DRC avançada",
+      "AAS em dose antiagregante — aumenta risco de sangramento gastrointestinal fatal em DRC"
+    ],
+    correctIndex: 0,
+    explanation: "Metformina é contraindicada com TFG < 30 mL/min pelo risco de acidose lática (acúmulo do fármaco com eliminação reduzida e interferência no metabolismo do lactato). Entre 30–45 mL/min, usar com cautela e monitoramento. As demais drogas citadas têm ajustes ou são seguras: losartana e iECA são indicadas na DRC (monitorar K⁺ e Cr); anlodipina é metabolismo hepático; AAS em baixa dose é seguro."
+  },
+  {
+    question: "Quais vacinações são especificamente recomendadas para pacientes com DRC?",
+    options: [
+      "Influenza anual, Pneumococo (PCV13 + PPSV23), Hepatite B (dose alta) e COVID-19",
+      "Apenas Hepatite B e Influenza anual, pois as demais não têm evidência em DRC",
+      "Febre amarela, Hepatite A, Hepatite B e Pneumococo apenas nos pacientes em diálise",
+      "Todas as vacinas do calendário adulto são contraindicadas em pacientes com DRC avançada",
+      "Influenza, Hepatite B e HPV apenas — as demais são de indicação geral sem especificidade para DRC"
+    ],
+    correctIndex: 0,
+    explanation: "Pacientes com DRC têm imunodepressão relativa e maior risco de infecções graves. As vacinações recomendadas incluem: Influenza (anual), Pneumococo (PCV13 seguida de PPSV23), Hepatite B (esquema com 40 mcg — dose dupla — com verificação de soroconversão) e COVID-19 (esquema completo + reforços). Rastrear TB (PPD/IGRA) antes de imunossupressores."
+  },
+  {
+    question: "Sobre o tratamento da hipercalemia na DRC, qual medicamento atua como quelante intestinal de potássio de ação rápida?",
+    options: [
+      "Ciclossilicato de zircônio sódico (Lokelma®) 5,0 g/sachê",
+      "Bicarbonato de sódio oral — corrige a acidose e redistribui K⁺ intracelular",
+      "Furosemida — aumenta a excreção renal de potássio",
+      "Insulina regular IV — redistribui K⁺ para dentro das células em emergências",
+      "Espironolactona — bloqueia os receptores de aldosterona e reduz a retenção de K⁺"
+    ],
+    correctIndex: 0,
+    explanation: "O ciclossilicato de zircônio sódico (Lokelma®) 5 g/sachê é um quelante de K⁺ intestinal de ação rápida, que troca K⁺ por H⁺ e Na⁺ no trato gastrointestinal, reduzindo sua absorção. Insulina e bicarbonato redistribuem K⁺ intracelularmente (não eliminam). Furosemida aumenta excreção renal se TFG permitir. Espironolactona é antagonista da aldosterona e CAUSA hipercalemia — contraindicada!"
+  },
+  {
+    question: "Qual é a meta de HbA1c recomendada para pacientes com DRC e DM tipo 2?",
+    options: [
+      "HbA1c ≈ 7,0–7,5% — evitar hipoglicemia que é mais frequente e prolongada na DRC",
+      "HbA1c < 6,5% — controle estrito para reduzir ao máximo a progressão da nefropatia",
+      "HbA1c < 8,0% em todos os pacientes, pois a DRC aumenta o risco de hipoglicemia grave",
+      "Não há meta específica — a HbA1c perde confiabilidade na DRC e não deve ser monitorada",
+      "HbA1c entre 5,5–6,5% nos estágios G1–G2 e > 8% nos estágios G4–G5 por risco de hipoglicemia"
+    ],
+    correctIndex: 0,
+    explanation: "A meta de HbA1c para DRC com DM é ≈ 7,0–7,5%. Metas mais rígidas aumentam o risco de hipoglicemia, que é mais frequente e prolongada na DRC (menor clearance de insulina e hipoglicemiantes). Atenção: a HbA1c pode subestimar o controle glicêmico na DRC por redução da vida média dos eritrócitos — complementar com glicemia de jejum e glicemia pós-prandial."
+  },
+  {
+    question: "Um paciente com DRC e HAS está em uso de iECA. Após 2 semanas, a creatinina sobe 0,3 mg/dL e o K⁺ vai a 5,3 mEq/L. Qual é a conduta mais adequada?",
+    options: [
+      "Manter o iECA — aumento de creatinina até 30% e K⁺ até 5,5 mEq/L são esperados e aceitáveis",
+      "Suspender imediatamente o iECA por risco de insuficiência renal aguda irreversível",
+      "Trocar o iECA por um BRA, pois BRAs não causam hipercalemia nem elevação de creatinina",
+      "Adicionar espironolactona para compensar a hipercalemia induzida pelo iECA",
+      "Reduzir a dose do iECA pela metade e dosar creatinina e K⁺ apenas após 3 meses"
+    ],
+    correctIndex: 0,
+    explanation: "Com o início de iECA/BRA é esperado aumento de creatinina (até 30% acima do basal) e de K⁺ (até 5,5 mEq/L) — isso reflete a redução da pressão de filtração e é tolerável. Só suspender se creatinina subir >30% ou K⁺ >5,5 mEq/L. BRAs têm perfil semelhante ao iECA em relação a K⁺ e Cr. Espironolactona agravaria a hipercalemia."
+  },
+  {
+    question: "Qual modalidade de hemodiálise combina difusão e convecção, permitindo maior remoção de médias e grandes moléculas?",
+    options: [
+      "Hemodiafiltração (HDF)",
+      "Hemodiálise convencional 3x/semana",
+      "Hemodiálise incremental (2x/semana)",
+      "Diálise peritoneal automatizada (DPA)",
+      "Hemodiálise diária (> 3x/semana)"
+    ],
+    correctIndex: 0,
+    explanation: "A Hemodiafiltração (HDF) combina difusão (remoção de pequenas moléculas) + convecção em alta taxa (remoção de médias e grandes moléculas como beta-2 microglobulina). Remove mais toxinas urêmicas e está associada a melhor controle da inflamação e pressão. A HD convencional usa principalmente difusão."
+  },
+  {
+    question: "Caso clínico — JAP, 55 anos, DM2 + HAS há 12 anos. Creatinina = 3,7 mg/dL, proteinúria 2+. Qual é a etiologia mais provável da DRC neste paciente?",
+    options: [
+      "Nefropatia diabética + nefroesclerose hipertensiva — o par DM+HAS é responsável por >60% dos casos de DRC",
+      "Glomerulopatia primária — mais comum em homens de meia-idade com proteinúria",
+      "Nefropatia por contraste — pelo uso de clopidogrel após angioplastia cardíaca",
+      "Doença renal policística autossômica dominante — a mais comum causa genética de DRC",
+      "Nefrite intersticial crônica — causada pelo uso prolongado de metformina e anlodipina"
+    ],
+    correctIndex: 0,
+    explanation: "Em paciente com DM2 + HAS de longa data, redução da acuidade visual (retinopatia), dormência em MMII (neuropatia) e proteinúria, as etiologias mais prováveis são nefropatia diabética + nefroesclerose hipertensiva. O par DM+HAS é responsável por mais de 60% dos casos de DRC no Brasil. A presença de retinopatia e neuropatia confirma o dano sistêmico do DM."
+  },
+  {
+    question: "Qual das opções abaixo descreve corretamente a FAV (fístula artério-venosa) para hemodiálise?",
+    options: [
+      "É o acesso definitivo de escolha por ter menor risco de infecção e trombose; necessita de maturação de 4–6 semanas antes do uso",
+      "Pode ser usada imediatamente após a confecção cirúrgica, sem necessidade de período de maturação",
+      "É preferida apenas em pacientes sem comorbidades cardiovasculares por risco de roubo vascular grave",
+      "É indicada como segunda opção após o cateter tunelizado, que tem melhor fluxo sanguíneo",
+      "Sua principal desvantagem é a alta taxa de infecção em comparação com os cateteres venosos centrais"
+    ],
+    correctIndex: 0,
+    explanation: "A FAV é o acesso vascular definitivo de escolha para HD por ter menor risco de infecção, trombose e hospitalização comparado a cateteres. Porém, precisa de um período de maturação (geralmente 4–6 semanas) para que a veia arterializada amadureça e permita punção adequada. Por isso deve ser confeccionada com antecedência, no estágio G4–G5."
+  },
+  {
+    question: "Em relação à dieta na DRC com TFG < 30 mL/min, qual recomendação proteica está correta?",
+    options: [
+      "Dieta hipoprotéica com 0,6–0,8 g/kg/dia para reduzir a carga de filtração e a produção de toxinas urêmicas",
+      "Dieta hiperprotéica com 1,5 g/kg/dia para compensar as perdas proteicas pela proteinúria",
+      "Restrição proteica abaixo de 0,4 g/kg/dia para máxima nefroproteção a partir do estágio G3",
+      "Ingesta proteica livre (sem restrição), pois a restrição não tem impacto na progressão da DRC",
+      "Apenas restrição de proteínas de origem animal, mantendo proteínas vegetais em quantidades livres"
+    ],
+    correctIndex: 0,
+    explanation: "Em pacientes com TFG < 30 mL/min, a dieta hipoprotéica de 0,6–0,8 g/kg/dia reduz a hiperfiltração, a produção de ureia e toxinas urêmicas, e retarda a progressão. Não deve ser inferior a 0,6 g/kg/dia para evitar desnutrição — acompanhamento nutricional é essencial. Em diálise, a restrição é suspensa (necessidade proteica aumenta)."
+  },
+  {
+    question: "Qual das opções abaixo lista CORRETAMENTE as causas de hipercalemia na DRC?",
+    options: [
+      "iECA, β-bloqueadores, espironolactona, acidose metabólica, obstipação intestinal e dieta rica em potássio",
+      "Furosemida, hidroclorotiazida, hiperventilação, alcalose metabólica e diarreia prolongada",
+      "Corticoides, metformina, atorvastatina, hipocalcemia e uso de quelantes de fósforo",
+      "AAS, clopidogrel, estatinas, hiperfosfatemia e uso de vitamina D ativa (calcitriol)",
+      "Anlodipina, isossorbida, carvedilol, hipoglicemia e dieta hipoproteica estrita"
+    ],
+    correctIndex: 0,
+    explanation: "As causas de hipercalemia na DRC incluem: medicamentos que bloqueiam a excreção renal de K⁺ (iECA, BRA, β-bloqueadores, espironolactona), acidose metabólica (redistribuição do K⁺ intracelular para o extracelular — cada 0,1 unidade de queda no pH eleva o K⁺ em 0,3–0,6 mEq/L), obstipação (reduz excreção fecal) e dieta rica em potássio."
+  }
+];
+
+function shuffleQuestion(q) {
+  const correctText = q.options[q.correctIndex];
+  const shuffled = [...q.options];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return { ...q, options: shuffled, correctIndex: shuffled.indexOf(correctText) };
+}
+
+let questions = [];
+let current = 0;
+let score = 0;
+
+function startQuiz() {
+  questions = rawQuestions.map(shuffleQuestion).sort(() => Math.random() - 0.5);
+  current = 0;
+  score = 0;
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('quizArea').style.display = 'block';
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = questions[current];
+  const total = questions.length;
+  document.getElementById('progressBar').style.width = ((current / total) * 100) + '%';
+  document.getElementById('progressLabel').textContent = `Questão ${current + 1} de ${total}`;
+  document.getElementById('questionNumber').textContent = `Questão ${current + 1}`;
+  document.getElementById('questionText').textContent = q.question;
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => selectAnswer(idx);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('explanation').className = 'explanation';
+  document.getElementById('explanation').textContent = '';
+  document.getElementById('btnNext').className = 'btn-next';
+}
+
+function selectAnswer(idx) {
+  const q = questions[current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  if (idx === q.correctIndex) {
+    btns[idx].classList.add('correct');
+    score++;
+  } else {
+    btns[idx].classList.add('wrong');
+    btns[q.correctIndex].classList.add('correct');
+  }
+
+  const exp = document.getElementById('explanation');
+  exp.textContent = q.explanation;
+  exp.className = 'explanation show';
+  document.getElementById('btnNext').className = 'btn-next show';
+  document.getElementById('btnNext').textContent = current + 1 < questions.length ? 'Próxima questão →' : 'Ver resultado';
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('quizArea').style.display = 'none';
+  const rs = document.getElementById('resultScreen');
+  rs.style.display = 'block';
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  document.getElementById('scoreFinal').textContent = score;
+  document.getElementById('scoreDenom').textContent = `de ${total}`;
+  document.getElementById('statCorrect').textContent = score;
+  document.getElementById('statWrong').textContent = total - score;
+  document.getElementById('statPct').textContent = pct + '%';
+
+  let title, msg;
+  if (pct >= 80) { title = 'Excelente!'; msg = 'Ótimo domínio do conteúdo de DRC. Continue assim!'; }
+  else if (pct >= 60) { title = 'Bom resultado!'; msg = 'Você está no caminho certo. Revise os pontos errados no relatório.'; }
+  else { title = 'Continue estudando!'; msg = 'Revise o relatório de DRC com atenção, especialmente tratamento e diálise.'; }
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent = msg;
+}
+
+function restartQuiz() {
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('startScreen').style.display = 'block';
+}
+</script>
+</body>
+</html>
