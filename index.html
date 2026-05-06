@@ -110,11 +110,11 @@ const rawQuestions = [
   {
     question: "Qual é a definição correta de Doença Renal Crônica (DRC) segundo o KDIGO?",
     options: [
-      "Anormalidade estrutural ou funcional dos rins por ≥ 3 meses, manifestada por lesão renal ou TFG ≤ 60 mL/min/1,73m²",
-      "Redução da TFG abaixo de 60 mL/min por qualquer período, independentemente de outros achados",
+      "Anormalidade renal por ≥ 3 meses com lesão estrutural ou TFG ≤ 60 mL/min/1,73m²",
+      "TFG < 60 mL/min por qualquer período, independente de outros achados",
       "Proteinúria persistente por mais de 6 meses associada à HAS ou DM",
-      "TFG inferior a 30 mL/min com necessidade de preparo para terapia renal substitutiva",
-      "Elevação da creatinina sérica por ≥ 1 mês com ou sem proteinúria associada"
+      "TFG < 30 mL/min com necessidade de preparo para terapia renal substitutiva",
+      "Creatinina elevada por ≥ 1 mês com ou sem proteinúria associada"
     ],
     correctIndex: 0,
     explanation: "DRC é definida pelo KDIGO como anormalidade estrutural ou funcional dos rins com duração ≥ 3 meses, manifestada por lesão renal (proteinúria, hematúria, alteração em imagem ou biópsia) OU TFG ≤ 60 mL/min/1,73m². O critério temporal de 3 meses diferencia DRC de IRA."
@@ -122,11 +122,11 @@ const rawQuestions = [
   {
     question: "Qual estágio da DRC corresponde a uma TFG de 22 mL/min/1,73m²?",
     options: [
-      "G4 — gravemente reduzida, com necessidade de preparo para TRS",
-      "G3b — moderada a gravemente reduzida",
-      "G5 — insuficiência renal estabelecida",
-      "G3a — leve a moderadamente reduzida",
-      "G2 — levemente reduzida com lesão renal"
+      "G4 — TFG gravemente reduzida, com preparo para TRS",
+      "G3b — TFG moderada a gravemente reduzida",
+      "G5 — TFG em insuficiência renal estabelecida",
+      "G3a — TFG leve a moderadamente reduzida",
+      "G2 — TFG levemente reduzida com lesão renal"
     ],
     correctIndex: 0,
     explanation: "TFG entre 15–29 mL/min/1,73m² corresponde ao estágio G4 (gravemente reduzida). Nesse estágio o paciente deve ser preparado para TRS. G3b = 30–44; G5 = <15; G3a = 45–59; G2 = 60–89."
@@ -134,7 +134,7 @@ const rawQuestions = [
   {
     question: "Sobre os marcadores de função renal, qual afirmação está CORRETA?",
     options: [
-      "A creatinina sofre secreção tubular proximal, fazendo o clearance de creatinina superestimar a TFG real",
+      "A creatinina sofre secreção tubular, fazendo o clearance superestimar a TFG",
       "A ureia não é reabsorvida no túbulo e por isso reflete com precisão a TFG",
       "A cistatina C varia significativamente com a massa muscular do paciente",
       "O clearance de creatinina subestima a TFG em pacientes com massa muscular aumentada",
@@ -146,10 +146,10 @@ const rawQuestions = [
   {
     question: "Em quais situações a cistatina C é preferível à creatinina para estimar a TFG?",
     options: [
-      "Pacientes com massa muscular muito baixa (caquexia) ou muito elevada (fisiculturistas) e obesos",
-      "Pacientes com hipertireoidismo ou em uso de corticoides, pois a cistatina não sofre variação nesses casos",
-      "Em todos os pacientes com DRC a partir do estágio G3, independentemente de outras características",
-      "Exclusivamente em gestantes, pois a creatinina é metabolizada de forma diferente na gravidez",
+      "Pacientes com massa muscular extrema (caquexia, fisiculturistas) ou obesidade",
+      "Pacientes com hipertireoidismo ou em corticoterapia, onde a cistatina não varia",
+      "Em todos os pacientes com DRC a partir do estágio G3, independente do perfil",
+      "Exclusivamente em gestantes, onde a creatinina tem metabolismo diferente",
       "Apenas em pacientes em hemodiálise, para monitorar adequação da diálise"
     ],
     correctIndex: 0,
@@ -158,11 +158,11 @@ const rawQuestions = [
   {
     question: "Qual dos seguintes fatores NÃO está associado à progressão da DRC?",
     options: [
-      "Hipotensão arterial crônica tratada com expansão volêmica",
-      "Proteinúria persistente",
-      "Hiperglicemia não controlada",
-      "Tabagismo ativo",
-      "Infecções do trato urinário de repetição"
+      "Hipotensão crônica corrigida com expansão volêmica",
+      "Proteinúria persistente como marcador de lesão renal",
+      "Hiperglicemia cronicamente descontrolada",
+      "Tabagismo ativo com qualquer carga tabágica",
+      "Infecções urinárias de repetição não tratadas"
     ],
     correctIndex: 0,
     explanation: "Os fatores associados à progressão da DRC incluem: proteinúria, HAS, hiperglicemia, dislipidemia, obesidade, tabagismo, DCV, ITU e IRA. Hipotensão crônica tratada com expansão volêmica não é fator de progressão descrito — embora hipoperfusão renal grave possa causar IRA e agravar a DRC."
@@ -194,7 +194,7 @@ const rawQuestions = [
   {
     question: "Sobre a fisiopatologia da anemia na DRC, qual opção está CORRETA?",
     options: [
-      "É multifatorial: redução de EPO, deficiência de ferro, inflamação, sangramento e hiperparatireoidismo secundário",
+      "É multifatorial: ↓ EPO, deficiência de ferro, inflamação e hiperparatireoidismo secundário",
       "É causada exclusivamente pela redução da produção de eritropoietina pelos rins doentes",
       "Resulta principalmente da hemólise mecânica causada pelo acúmulo de toxinas urêmicas",
       "Ocorre apenas nos estágios G4 e G5, sendo incomum nos estágios iniciais da DRC",
@@ -210,7 +210,7 @@ const rawQuestions = [
       "Dapagliflozina — Forxiga®",
       "Empagliflozina — Jardiance®",
       "Canagliflozina — Invokana®",
-      "Empagliflozina — disponível em doses de 10 mg e 25 mg"
+      "Canagliflozina — Farxiga®"
     ],
     correctIndex: 0,
     explanation: "Dapagliflozina = Forxiga® (10 mg). Empagliflozina = Jardiance® (10 mg e 25 mg). Canagliflozina = Invokana® (100 mg e 300 mg). A afirmação incorreta é associar dapagliflozina ao Jardiance® — este é o nome comercial da empagliflozina."
@@ -242,7 +242,7 @@ const rawQuestions = [
   {
     question: "Quais são as indicações para início da diálise na DRC?",
     options: [
-      "TFG < 10–12 mL/min, síndrome urêmica, hipervolemia refratária, hipercalemia refratária com alteração no ECG e acidose metabólica refratária",
+      "TFG < 10–12 mL/min, síndrome urêmica, hipervolemia ou hipercalemia refratárias",
       "TFG < 20 mL/min isoladamente, independentemente da presença de sintomas ou complicações",
       "Apenas sintomas de síndrome urêmica clássica (encefalopatia, pericardite, asterixis)",
       "TFG < 15 mL/min associada obrigatoriamente a proteinúria acima de 3 g/dia",
@@ -254,7 +254,7 @@ const rawQuestions = [
   {
     question: "Qual é o princípio físico-químico predominante na hemodiálise convencional?",
     options: [
-      "Difusão — movimento de solutos pela diferença de concentração entre o sangue e o dialisato",
+      "Difusão — transporte de solutos pela diferença de concentração no dialisador",
       "Convecção — movimento do solvente que arrasta solutos por ultrafiltração",
       "Adsorção — aderência de toxinas urêmicas na membrana do dialisador",
       "Osmose — movimento de água do compartimento de menor para maior concentração",
@@ -266,10 +266,10 @@ const rawQuestions = [
   {
     question: "Qual é o acesso vascular definitivo de PRIMEIRA escolha para hemodiálise?",
     options: [
-      "Fístula artério-venosa entre artéria radial e veia cefálica distal (FAV radiocefálica)",
-      "Cateter tunelizado na veia jugular interna direita",
-      "Prótese vascular (PTFE) em alça no antebraço",
-      "Fístula entre artéria braquial e veia cefálica (FAV braquiocefálica)",
+      "FAV radiocefálica (artéria radial + veia cefálica distal)",
+      "Cateter tunelizado na veia jugular interna direita como via definitiva",
+      "Prótese vascular (PTFE) em alça no antebraço como alternativa",
+      "FAV braquiocefálica (artéria braquial + veia cefálica)",
       "Cateter não tunelizado na veia subclávia por ser de fácil implante"
     ],
     correctIndex: 0,
@@ -315,10 +315,10 @@ const rawQuestions = [
     question: "Sobre o tratamento da hipercalemia na DRC, qual medicamento atua como quelante intestinal de potássio de ação rápida?",
     options: [
       "Ciclossilicato de zircônio sódico (Lokelma®) 5,0 g/sachê",
-      "Bicarbonato de sódio oral — corrige a acidose e redistribui K⁺ intracelular",
-      "Furosemida — aumenta a excreção renal de potássio",
-      "Insulina regular IV — redistribui K⁺ para dentro das células em emergências",
-      "Espironolactona — bloqueia os receptores de aldosterona e reduz a retenção de K⁺"
+      "Bicarbonato de sódio oral — corrige a acidose e redistribui K⁺",
+      "Furosemida — aumenta a excreção renal de potássio em dose alta",
+      "Insulina regular IV — redistribui K⁺ intracelular em emergências",
+      "Espironolactona — bloqueia receptores de aldosterona e retém K⁺"
     ],
     correctIndex: 0,
     explanation: "O ciclossilicato de zircônio sódico (Lokelma®) 5 g/sachê é um quelante de K⁺ intestinal de ação rápida, que troca K⁺ por H⁺ e Na⁺ no trato gastrointestinal, reduzindo sua absorção. Insulina e bicarbonato redistribuem K⁺ intracelularmente (não eliminam). Furosemida aumenta excreção renal se TFG permitir. Espironolactona é antagonista da aldosterona e CAUSA hipercalemia — contraindicada!"
@@ -350,11 +350,11 @@ const rawQuestions = [
   {
     question: "Qual modalidade de hemodiálise combina difusão e convecção, permitindo maior remoção de médias e grandes moléculas?",
     options: [
-      "Hemodiafiltração (HDF)",
-      "Hemodiálise convencional 3x/semana",
-      "Hemodiálise incremental (2x/semana)",
+      "Hemodiafiltração de alto volume (HDF)",
+      "Hemodiálise convencional 3×/semana",
+      "Hemodiálise incremental 2×/semana",
       "Diálise peritoneal automatizada (DPA)",
-      "Hemodiálise diária (> 3x/semana)"
+      "Hemodiálise diária (mais de 3×/semana)"
     ],
     correctIndex: 0,
     explanation: "A Hemodiafiltração (HDF) combina difusão (remoção de pequenas moléculas) + convecção em alta taxa (remoção de médias e grandes moléculas como beta-2 microglobulina). Remove mais toxinas urêmicas e está associada a melhor controle da inflamação e pressão. A HD convencional usa principalmente difusão."
@@ -362,7 +362,7 @@ const rawQuestions = [
   {
     question: "Caso clínico — JAP, 55 anos, DM2 + HAS há 12 anos. Creatinina = 3,7 mg/dL, proteinúria 2+. Qual é a etiologia mais provável da DRC neste paciente?",
     options: [
-      "Nefropatia diabética + nefroesclerose hipertensiva — o par DM+HAS é responsável por >60% dos casos de DRC",
+      "Nefropatia diabética + nefroesclerose hipertensiva — DM+HAS causam >60% dos casos",
       "Glomerulopatia primária — mais comum em homens de meia-idade com proteinúria",
       "Nefropatia por contraste — pelo uso de clopidogrel após angioplastia cardíaca",
       "Doença renal policística autossômica dominante — a mais comum causa genética de DRC",
@@ -374,7 +374,7 @@ const rawQuestions = [
   {
     question: "Qual das opções abaixo descreve corretamente a FAV (fístula artério-venosa) para hemodiálise?",
     options: [
-      "É o acesso definitivo de escolha por ter menor risco de infecção e trombose; necessita de maturação de 4–6 semanas antes do uso",
+      "É o acesso definitivo de escolha (menor infecção e trombose), com maturação de 4–6 semanas",
       "Pode ser usada imediatamente após a confecção cirúrgica, sem necessidade de período de maturação",
       "É preferida apenas em pacientes sem comorbidades cardiovasculares por risco de roubo vascular grave",
       "É indicada como segunda opção após o cateter tunelizado, que tem melhor fluxo sanguíneo",
@@ -398,7 +398,7 @@ const rawQuestions = [
   {
     question: "Qual das opções abaixo lista CORRETAMENTE as causas de hipercalemia na DRC?",
     options: [
-      "iECA, β-bloqueadores, espironolactona, acidose metabólica, obstipação intestinal e dieta rica em potássio",
+      "iECA, β-bloqueadores, espironolactona, acidose metabólica, obstipação e dieta rica em K⁺",
       "Furosemida, hidroclorotiazida, hiperventilação, alcalose metabólica e diarreia prolongada",
       "Corticoides, metformina, atorvastatina, hipocalcemia e uso de quelantes de fósforo",
       "AAS, clopidogrel, estatinas, hiperfosfatemia e uso de vitamina D ativa (calcitriol)",
